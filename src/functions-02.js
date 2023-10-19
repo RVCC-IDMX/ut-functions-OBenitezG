@@ -179,25 +179,19 @@ const store = {
    * must use isItemInStore() method in this object
    */
   addItemQuantity(itemName, price, quantity) {
-    let index;
     const check = this.isItemInStore(itemName);
 
     if (check === false) {
       this.inventory.push({ name: itemName, price, quantity });
-      return this.addItemQuantity(itemName);
+      return this.getItemQuantity(itemName);
     }
 
     inventory.forEach((item) => {
       if (item.name === itemName) {
-        index = inventory.indexOf(item.quantity);
       }
     });
 
-    this.iventory[index] += quantity;
-
-    const newQuantity = this.addItemQuantity(itemName);
-
-    return newQuantity;
+    return this.getItemQuantity(itemName);
   },
   /**
    * Removes a certain quantity of an item from the store
@@ -210,20 +204,19 @@ const store = {
    * must use isItemInStore() method in this object
    */
   removeItemQuantity(itemName, quantity) {
-    let quantityCheck;
     if (!this.isItemInStore(itemName)) {
       return -1;
     }
 
-    const item = this.inventory.filter((item) => item.name === itemName);
+    let itemOne = this.inventory.filter((item) => item.name === itemName);
 
-    if (item.quantity < quantity) {
+    if (itemOne.quantity < quantity) {
       return -1;
     }
-    item.quantity -= quantity;
-    quantityCheck = item.quantity;
 
-    return quantityCheck;
+    itemOne -= quantity;
+
+    return this.getItemQuantity(itemName);
   },
   /**
    * Returns the total of all the items in the store
