@@ -179,15 +179,19 @@ const store = {
    * must use isItemInStore() method in this object
    */
   addItemQuantity(itemName, price, quantity) {
+    const itemPrice = price;
+    const itemQuantity = quantity;
     const check = this.isItemInStore(itemName);
 
     if (check === false) {
-      this.inventory.push({ name: itemName, price, quantity });
+      this.getInventory().push({ name: itemName, price: itemPrice, quantity: itemQuantity });
       return this.getItemQuantity(itemName);
     }
 
     inventory.forEach((item) => {
       if (item.name === itemName) {
+        // eslint-disable-next-line no-param-reassign
+        item.quantity += quantity;
       }
     });
 
@@ -204,19 +208,15 @@ const store = {
    * must use isItemInStore() method in this object
    */
   removeItemQuantity(itemName, quantity) {
-    if (!this.isItemInStore(itemName)) {
-      return -1;
+    if (this.isItemInStore(itemName)) {
+      if (this.getInventory().find((item) => item.name === itemName).quantity >= quantity) {
+        this.getInventory().find((item) => item.name === itemName).quantity -= quantity;
+
+        return this.getItemQuantity(itemName);
+      }
     }
 
-    let itemOne = this.inventory.filter((item) => item.name === itemName);
-
-    if (itemOne.quantity < quantity) {
-      return -1;
-    }
-
-    itemOne -= quantity;
-
-    return this.getItemQuantity(itemName);
+    return -1;
   },
   /**
    * Returns the total of all the items in the store
@@ -225,7 +225,8 @@ const store = {
    * must use the reduce() array method
    */
   getTotalValue() {
-    const total = inventory.reduce((currentTotal, item) => item.price + currentTotal, 0);
+    // eslint-disable-next-line max-len
+    const total = inventory.reduce((currentTotal, item) => (item.price * item.quantity) + currentTotal, 0);
 
     return total;
   },
